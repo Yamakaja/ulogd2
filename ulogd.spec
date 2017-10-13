@@ -76,6 +76,7 @@ rm -rf %{buildroot}
 %{_libdir}/ulogd/ulogd_BASE.so
 %{_libdir}/ulogd/ulogd_LOCAL.so
 %{_libdir}/ulogd/ulogd_LOGEMU.so
+%{_libdir}/ulogd/ulogd_CPLF.so
 %{_libdir}/ulogd/ulogd_OPRINT.so
 %{_libdir}/ulogd/ulogd_PWSNIFF.so
 %{_libdir}/ulogd/ulogd_PCAP.so

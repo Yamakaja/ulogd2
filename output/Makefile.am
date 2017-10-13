@@ -4,7 +4,7 @@ AM_CFLAGS = ${regular_CFLAGS}
 
 SUBDIRS= pcap mysql pgsql sqlite3 dbi
 
-pkglib_LTLIBRARIES = ulogd_output_LOGEMU.la ulogd_output_SYSLOG.la \
+pkglib_LTLIBRARIES = ulogd_output_LOGEMU.la ulogd_output_CPLF.la ulogd_output_SYSLOG.la \
 			 ulogd_output_OPRINT.la ulogd_output_GPRINT.la \
 			 ulogd_output_NACCT.la ulogd_output_XML.la \
 			 ulogd_output_GRAPHITE.la
@@ -18,6 +18,9 @@ ulogd_output_GPRINT_la_LDFLAGS = -avoid-version -module
 
 ulogd_output_LOGEMU_la_SOURCES = ulogd_output_LOGEMU.c
 ulogd_output_LOGEMU_la_LDFLAGS = -avoid-version -module
+
+ulogd_output_CPLF_la_SOURCES = ulogd_output_CPLF.c
+ulogd_output_CPLF_la_LDFLAGS = -avoid-version -module
 
 ulogd_output_SYSLOG_la_SOURCES = ulogd_output_SYSLOG.c
 ulogd_output_SYSLOG_la_LDFLAGS = -avoid-version -module

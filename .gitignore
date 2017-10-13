@@ -24,3 +24,7 @@ TAGS
 /doc/ulogd.*
 !/doc/ulogd.sgml
 ulogd.conf.5
+
+# Vim
+*~
+
