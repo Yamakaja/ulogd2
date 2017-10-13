@@ -94,13 +94,10 @@ static int _output_logemu(struct ulogd_pluginstance *upi)
 			now = (time_t) res[1].u.source->u.value.ui32;
 		else
 			now = time(NULL);
+        
+        char *unk = (char *) res[0].u.source->u.value.ptr;
 
-		timestr = ctime(&now) + 4;
-		if ((tmp = strchr(timestr, '\n')))
-			*tmp = '\0';
-
-		fprintf(li->of, "%.15s %s %s", timestr, hostname,
-				(char *) res[0].u.source->u.value.ptr);
+		fprintf(li->of, "%d %s", now, unk);
 
 		if (upi->config_kset->ces[1].u.value)
 			fflush(li->of);
