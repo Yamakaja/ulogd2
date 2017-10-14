@@ -86,14 +86,21 @@ static int _output_logemu(struct ulogd_pluginstance *upi)
 	struct ulogd_key *res = upi->input.keys;
 
 	if (res[0].u.source->flags & ULOGD_RETF_VALID) {
+		char *timestr;
+		char *tmp;
 		time_t now;
 
 		if (res[1].u.source && (res[1].u.source->flags & ULOGD_RETF_VALID))
 			now = (time_t) res[1].u.source->u.value.ui32;
 		else
 			now = time(NULL);
-        
-		fprintf(li->of, "%ld %s", now, (char *) res[0].u.source->u.value.ptr);
+
+		timestr = ctime(&now) + 4;
+		if ((tmp = strchr(timestr, '\n')))
+			*tmp = '\0';
+
+		fprintf(li->of, "%.15s %s %s", timestr, hostname,
+				(char *) res[0].u.source->u.value.ptr);
 
 		if (upi->config_kset->ces[1].u.value)
 			fflush(li->of);
