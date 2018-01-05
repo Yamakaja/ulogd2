@@ -422,7 +422,7 @@ to a file.  The only useful application is debugging.
 <descrip>
 <tag>dumpfile</tag>
 The filename where it should log to. The default is
-<tt>/var/log/ulogd.pktlog</tt>
+<tt>/var/log/ulogd_oprint.log</tt>
 </descrip>
 
 <sect2>ulogd_output_LOGEMU.so
@@ -433,7 +433,7 @@ as possible. Logging is done to a seperate textfile instead of syslog, though.
 The module defines the following configuration directives:
 <descrip>
 <tag>file</tag>The filename where it should log to. The default is
-<tt>/var/log/ulogd.syslogemu</tt>
+<tt>/var/log/ulogd_syslogemu.log</tt>
 <tag>sync</tag>Set this to 1 if you want to have your logfile written
 synchronously. This may reduce performance, but makes your log-lines appear
 immediately.  The default is <tt>0</tt>
@@ -603,8 +603,6 @@ The module defines the following configuration directives:
 Name of the table to which ulogd should log.
 <tag>db</tag>
 Name of the database.
-<tag>buffer</tag>
-Size of the sqlite buffer.
 </descrip>
 </sect2>
 

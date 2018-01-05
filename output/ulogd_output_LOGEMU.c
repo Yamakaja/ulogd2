@@ -37,7 +37,7 @@
 #endif
 
 #ifndef ULOGD_LOGEMU_DEFAULT
-#define ULOGD_LOGEMU_DEFAULT	"/var/log/ulogd.syslogemu"
+#define ULOGD_LOGEMU_DEFAULT	"/var/log/ulogd_syslogemu.log"
 #endif
 
 #ifndef ULOGD_LOGEMU_SYNC_DEFAULT

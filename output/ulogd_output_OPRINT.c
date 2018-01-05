@@ -28,7 +28,7 @@
 #include <ulogd/conffile.h>
 
 #ifndef ULOGD_OPRINT_DEFAULT
-#define ULOGD_OPRINT_DEFAULT	"/var/log/ulogd.pktlog"
+#define ULOGD_OPRINT_DEFAULT	"/var/log/ulogd_oprint.log"
 #endif
 
 #define NIPQUAD(addr) \

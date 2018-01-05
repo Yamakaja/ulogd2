@@ -120,7 +120,7 @@ static char ipbin_array[MAX_KEY-START_KEY][IPADDR_LENGTH];
  * Convert IPv4 address (as 32-bit unsigned integer) to IPv6 address:
  * add 96 bits prefix "::ffff:" to get IPv6 address "::ffff:a.b.c.d".
  */
-inline void uint32_to_ipv6(const uint32_t ipv4, struct in6_addr *ipv6)
+static inline void uint32_to_ipv6(const uint32_t ipv4, struct in6_addr *ipv6)
 {
 	ipv6->s6_addr32[0] = 0x00000000;
 	ipv6->s6_addr32[1] = 0x00000000;

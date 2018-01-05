@@ -35,7 +35,7 @@ if test "$pg_prefix" != "no"; then
 AC_MSG_CHECKING([for PostgreSQL pg_config program])
 for d in $pg_prefix/bin /usr/bin /usr/local/bin /usr/local/pgsql/bin /opt/pgsql/bin /opt/packages/pgsql/bin
 do
-	if test -x $d/pg_config
+	if test -x $d/pg_config -a "$cross_compiling" = "no";
 	then
 		AC_MSG_RESULT(found pg_config in $d)
 		PQINCPATH=`$d/pg_config --includedir`
@@ -45,43 +45,41 @@ do
 done
 
 if test "$PQINCPATH" = ""; then
-
-if test "$pg_prefix" != ""; then
-   AC_MSG_CHECKING([for PostgreSQL includes in $pg_prefix/include])
-   if test -f "$pg_prefix/include/libpq-fe.h" ; then
-      PQINCPATH="-I$pg_prefix/include"
-      AC_MSG_RESULT([yes])
+   if test "$pg_prefix" != ""; then
+      AC_MSG_CHECKING([for PostgreSQL includes in $pg_prefix/include])
+      if test -f "$pg_prefix/include/libpq-fe.h" ; then
+         PQINCPATH="-I$pg_prefix/include"
+         AC_MSG_RESULT([yes])
+      else
+         AC_MSG_WARN(libpq-fe.h not found)
+      fi
+      AC_MSG_CHECKING([for PostgreSQL libraries in $pg_prefix/lib])
+      if test -f "$pg_prefix/lib/libpq.so" ; then
+         PQLIBPATH="-L$pg_prefix/lib"
+         AC_MSG_RESULT([yes])
+      else
+         AC_MSG_WARN(libpq.so not found)
+      fi
    else
-      AC_MSG_WARN(libpq-fe.h not found)
+     if test "$pg_inc" != ""; then
+       AC_MSG_CHECKING([for PostgreSQL includes in $pg_inc])
+       if test -f "$pg_inc/libpq-fe.h" ; then
+         PQINCPATH="-I$pg_inc"
+         AC_MSG_RESULT([yes])
+       else
+         AC_MSG_WARN(libpq-fe.h not found)
+       fi
+     fi
+     if test "$pg_lib" != ""; then
+       AC_MSG_CHECKING([for PostgreSQL libraries in $pg_lib])
+       if test -f "$pg_lib/libpq.so" ; then
+         PQLIBPATH="-L$pg_lib"
+         AC_MSG_RESULT([yes])
+       else
+         AC_MSG_WARN(libpq.so not found)
+       fi
+     fi
    fi
-   AC_MSG_CHECKING([for PostgreSQL libraries in $pg_prefix/lib])
-   if test -f "$pg_prefix/lib/libpq.so" ; then
-      PQLIBPATH="-L$pg_prefix/lib"
-      AC_MSG_RESULT([yes])
-   else
-      AC_MSG_WARN(libpq.so not found)
-   fi
-else
-  if test "$pg_inc" != ""; then
-    AC_MSG_CHECKING([for PostgreSQL includes in $pg_inc])
-    if test -f "$pg_inc/libpq-fe.h" ; then
-      PQINCPATH="-I$pg_inc"
-      AC_MSG_RESULT([yes])
-    else
-      AC_MSG_WARN(libpq-fe.h not found)
-    fi
-  fi
-  if test "$pg_lib" != ""; then
-    AC_MSG_CHECKING([for PostgreSQL libraries in $pg_lib])
-    if test -f "$pg_lib/libpq.so" ; then
-      PQLIBPATH="-L$pg_lib"
-      AC_MSG_RESULT([yes])
-    else
-      AC_MSG_WARN(libpq.so not found)
-    fi
-  fi
-fi
-
 fi
 
 if test "$PQINCPATH" = "" ; then
@@ -130,7 +128,7 @@ if test "$my_prefix" != "no"; then
 AC_MSG_CHECKING([for MySQL mysql_config program])
 for d in $my_prefix/bin /usr/bin /usr/local/bin /usr/local/mysql/bin /opt/mysql/bin /opt/packages/mysql/bin
 do
-	if test -x $d/mysql_config
+	if test -x $d/mysql_config -a "$cross_compiling" = "no";
 	then
 		AC_MSG_RESULT(found mysql_config in $d)
 		MYSQL_INC=`$d/mysql_config --include`
@@ -140,43 +138,41 @@ do
 done
 
 if test "$MYSQL_INC" = ""; then
-
-if test "$my_prefix" != ""; then
-   AC_MSG_CHECKING([for MySQL includes in $my_prefix/include])
-   if test -f "$my_prefix/include/mysql.h" ; then
-      MYSQL_INC="-I$my_prefix/include"
-      AC_MSG_RESULT([yes])
+   if test "$my_prefix" != ""; then
+      AC_MSG_CHECKING([for MySQL includes in $my_prefix/include])
+      if test -f "$my_prefix/include/mysql.h" ; then
+         MYSQL_INC="-I$my_prefix/include"
+         AC_MSG_RESULT([yes])
+      else
+         AC_MSG_WARN(mysql.h not found)
+      fi
+      AC_MSG_CHECKING([for MySQL libraries in $my_prefix/lib])
+      if test -f "$my_prefix/lib/libmysql.so" ; then
+         MYSQL_LIB="-L$my_prefix/lib -lmysqlclient"
+         AC_MSG_RESULT([yes])
+      else
+         AC_MSG_WARN(libmysqlclient.so not found)
+      fi
    else
-      AC_MSG_WARN(mysql.h not found)
+     if test "$my_inc" != ""; then
+       AC_MSG_CHECKING([for MySQL includes in $my_inc])
+       if test -f "$my_inc/mysql.h" ; then
+         MYSQL_INC="-I$my_inc"
+         AC_MSG_RESULT([yes])
+       else
+         AC_MSG_WARN(mysql.h not found)
+       fi
+     fi
+     if test "$my_lib" != ""; then
+       AC_MSG_CHECKING([for MySQL libraries in $my_lib])
+       if test -f "$my_lib/libmysqlclient.so" ; then
+         MYSQL_LIB="-L$my_lib -lmysqlclient"
+         AC_MSG_RESULT([yes])
+       else
+         AC_MSG_WARN(libmysqlclient.so not found)
+       fi
+     fi
    fi
-   AC_MSG_CHECKING([for MySQL libraries in $my_prefix/lib])
-   if test -f "$my_prefix/lib/libmysql.so" ; then
-      MYSQL_LIB="-L$my_prefix/lib -lmysqlclient"
-      AC_MSG_RESULT([yes])
-   else
-      AC_MSG_WARN(libmysqlclient.so not found)
-   fi
-else
-  if test "$my_inc" != ""; then
-    AC_MSG_CHECKING([for MySQL includes in $my_inc])
-    if test -f "$my_inc/mysql.h" ; then
-      MYSQL_INC="-I$my_inc"
-      AC_MSG_RESULT([yes])
-    else
-      AC_MSG_WARN(mysql.h not found)
-    fi
-  fi
-  if test "$my_lib" != ""; then
-    AC_MSG_CHECKING([for MySQL libraries in $my_lib])
-    if test -f "$my_lib/libmysqlclient.so" ; then
-      MYSQL_LIB="-L$my_lib -lmysqlclient"
-      AC_MSG_RESULT([yes])
-    else
-      AC_MSG_WARN(libmysqlclient.so not found)
-    fi
-  fi
-fi
-
 fi
 
 if test "$MYSQL_INC" = "" ; then

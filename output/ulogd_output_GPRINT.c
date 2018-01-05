@@ -31,7 +31,7 @@
 #include <ulogd/conffile.h>
 
 #ifndef ULOGD_GPRINT_DEFAULT
-#define ULOGD_GPRINT_DEFAULT	"/var/log/ulogd.gprint"
+#define ULOGD_GPRINT_DEFAULT	"/var/log/ulogd_gprint.log"
 #endif
 
 struct gprint_priv {

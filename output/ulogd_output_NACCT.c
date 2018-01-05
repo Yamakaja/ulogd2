@@ -29,7 +29,7 @@
 #include <ulogd/ulogd.h>
 #include <ulogd/conffile.h>
 
-#define NACCT_FILE_DEFAULT	"/var/log/nacctdata.log"
+#define NACCT_FILE_DEFAULT	"/var/log/ulogd_nacct.log"
 
 /* config accessors (lazy me...) */
 #define NACCT_CFG_FILE(pi)	((pi)->config_kset->ces[0].u.string)

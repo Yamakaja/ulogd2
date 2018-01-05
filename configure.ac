@@ -1,8 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([ulogd], [2.0.5])
+AC_INIT([ulogd], [2.0.6])
 AC_PREREQ([2.50])
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE([-Wall foreign tar-pax no-dist-gzip dist-bzip2 1.10b])
+AM_INIT_AUTOMAKE([-Wall foreign tar-pax no-dist-gzip dist-bzip2 1.10b subdir-objects])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -85,7 +85,10 @@ if [! test "x$enable_nfacct" = "xyes"]; then
 	enable_nfacct="no"
 fi
 
-CT_CHECK_POSTGRES_DB()
+AC_ARG_WITH([pgsql], AS_HELP_STRING([--without-pgsql], [Build without postgresql output plugin [default=test]]))
+AS_IF([test "x$with_pgsql" != "xno"], [
+	CT_CHECK_POSTGRES_DB()
+])
 AM_CONDITIONAL(HAVE_PGSQL, test "x$PQLIBPATH" != "x")
 if test "x$PQLIBPATH" != "x"; then
 	enable_pgsql="yes"
@@ -93,13 +96,17 @@ else
 	enable_pgsql="no"
 fi
 
-CT_CHECK_MYSQL_DB()
+AC_ARG_WITH([mysql], AS_HELP_STRING([--without-mysql], [Build without mysql output plugin [default=test]]))
+AS_IF([test "x$with_mysql" != "xno"], [
+	CT_CHECK_MYSQL_DB()
+])
 AM_CONDITIONAL(HAVE_MYSQL, test "x$MYSQL_LIB" != "x")
 if test "x$MYSQL_LIB" != "x"; then
 	enable_mysql="yes"
 else
 	enable_mysql="no"
 fi
+
 
 AC_ARG_WITH([sqlite], AS_HELP_STRING([--without-sqlite], [Build without SQLITE3 output plugin [default=test]]))
 AS_IF([test "x$with_sqlite" != "xno"], [

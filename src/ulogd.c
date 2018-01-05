@@ -64,6 +64,7 @@
 #include <syslog.h>
 #include <sys/time.h>
 #include <sys/stat.h>
+#include <sched.h>
 #include <ulogd/conffile.h>
 #include <ulogd/ulogd.h>
 #ifdef DEBUG
@@ -83,7 +84,7 @@ static char *ulogd_logfile = NULL;
 static const char *ulogd_configfile = ULOGD_CONFIGFILE;
 static const char *ulogd_pidfile = NULL;
 static int ulogd_pidfile_fd = -1;
-static FILE syslog_dummy;
+static FILE *syslog_dummy;
 
 static int info_mode = 0;
 
@@ -392,6 +393,7 @@ void ulogd_register_plugin(struct ulogd_plugin *me)
 	if (strcmp(me->version, VERSION)) { 
 		ulogd_log(ULOGD_NOTICE, 
 			  "plugin `%s' has incompatible version %s\n",
+			  me->name,
 			  me->version);
 		return;
 	}
@@ -524,7 +526,7 @@ void __ulogd_log(int level, char *file, int line, const char *format, ...)
 	if (level < loglevel_ce.u.value)
 		return;
 
-	if (logfile == &syslog_dummy) {
+	if (logfile == syslog_dummy) {
 		/* FIXME: this omits the 'file' string */
 		va_start(ap, format);
 		vsyslog(ulogd2syslog_level(level), format, ap);
@@ -668,7 +670,7 @@ pluginstance_alloc_init(struct ulogd_plugin *pl, char *pi_id,
 	INIT_LLIST_HEAD(&pi->plist);
 	pi->plugin = pl;
 	pi->stack = stack;
-	memcpy(pi->id, pi_id, sizeof(pi->id));
+	strncpy(pi->id, pi_id, ULOGD_MAX_KEYLEN);
 
 	ptr = (void *)pi + sizeof(*pi);
 
@@ -1046,7 +1048,7 @@ static int logfile_open(const char *name)
 		logfile = stdout;
 	} else if (!strcmp(name, "syslog")) {
 		openlog("ulogd", LOG_PID, LOG_DAEMON);
-		logfile = &syslog_dummy;
+		logfile = syslog_dummy = fopen("/dev/null", "w");
 	} else {
 		logfile = fopen(ulogd_logfile, "a");
 		if (!logfile) {
@@ -1348,7 +1350,7 @@ static void sigterm_handler_task(int signal)
 	unload_plugins();
 #endif
 
-	if (logfile != NULL  && logfile != stdout && logfile != &syslog_dummy) {
+	if (logfile != NULL  && logfile != stdout) {
 		fclose(logfile);
 		logfile = NULL;
 	}
@@ -1375,7 +1377,7 @@ static void signal_handler_task(int signal)
 	switch (signal) {
 	case SIGHUP:
 		/* reopen logfile */
-		if (logfile != stdout && logfile != &syslog_dummy) {
+		if (logfile != stdout && logfile != syslog_dummy) {
 			fclose(logfile);
 			logfile = fopen(ulogd_logfile, "a");
  			if (!logfile) {
@@ -1392,6 +1394,19 @@ static void signal_handler_task(int signal)
 	}
 
 	deliver_signal_pluginstances(signal);
+}
+
+static void set_scheduler(void)
+{
+	struct sched_param schedparam;
+	int sched_type;
+
+	schedparam.sched_priority = sched_get_priority_max(SCHED_RR);
+	sched_type = SCHED_RR;
+
+	if (sched_setscheduler(0, sched_type, &schedparam) < 0)
+		fprintf(stderr, "WARNING: scheduler configuration failed:"
+			" %s\n", strerror(errno));
 }
 
 static void print_usage(void)
@@ -1515,7 +1530,7 @@ int main(int argc, char* argv[])
 
 	if (daemonize){
 		if (daemon(0, 0) < 0) {
-			ulogd_log(ULOGD_FATAL, "can't daemonize: %s (%d)",
+			ulogd_log(ULOGD_FATAL, "can't daemonize: %s (%d)\n",
 				  errno, strerror(errno));
 			warn_and_exit(daemonize);
 		}
@@ -1588,6 +1603,7 @@ int main(int argc, char* argv[])
 	signal(SIGALRM, &signal_handler);
 	signal(SIGUSR1, &signal_handler);
 	signal(SIGUSR2, &signal_handler);
+	set_scheduler();
 
 	ulogd_log(ULOGD_INFO, 
 		  "initialization finished, entering main loop\n");
